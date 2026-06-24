@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENGINEERING ROBOTICS GPT</title>
+    <style>
+        /* --- ARQUITECTURA BASE Y EFECTOS MATRIX --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Efecto global de líneas de escaneo de monitor antiguo */
+        body {
+            background-color: #040811;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* CUADRÍCULA TECNOLÓGICA DE FONDO */
+        .cyber-grid {
+            background-image: linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center;
+        }
+
+        /* BARRA DE NAVEGACIÓN SUPERIOR */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(4, 8, 17, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #00f2fe;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.25);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #00f2fe;
+            text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+            animation: glitchPulse 4s infinite alternate;
+        }
+
+        .logo span { color: #4facfe; }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 5px;
+            transition: 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #00f2fe;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px #00f2fe;
+        }
+
+        nav a:hover::after { width: 100%; }
+        nav a:hover { color: #00f2fe; text-shadow: 0 0 8px rgba(0, 242, 254, 0.6); }
+
+        /* --- HERO BANNER (PANTALLA DE INICIO) --- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: radial-gradient(circle, #0c162b 0%, #040811 100%);
+        }
+
+        .slider {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: carruselCSS 15s infinite ease-in-out;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(4,8,17,0.4), rgba(4,8,17,0.95));
+        }
+
+        .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1920'); animation-delay: 0s; }
+        .slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1920'); animation-delay: 5s; }
+        .slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=1920'); animation-delay: 10s; }
+
+        @keyframes carruselCSS {
+            0%, 8.33%, 100% { opacity: 0; }
+            16.66%, 41.66% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            background: linear-gradient(45deg, #00f2fe, #4facfe, #00f2fe);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+            line-height: 1.7;
+        }
+
+        /* BOTÓN MEJORADO CON LUZ EXPANSIVA */
+        .btn-cyber {
+            padding: 16px 45px;
+            font-size: 1rem;
+            background: transparent;
+            color: #00f2fe;
+            border: 2px solid #00f2fe;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 3px;
+            position: relative;
+            transition: all 0.3s ease;
+            clip-path: polygon(92% 0, 100% 25%, 100% 100%, 8% 100%, 0% 75%, 0 0);
+        }
+
+        .btn-cyber:hover {
+            background: #00f2fe;
+            color: #040811;
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* --- CONTENEDORES DE SECCIÓN INDIVIDUALES --- */
+        .info-section {
+            padding: 110px 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        #servicios, #productos { background: #070d1a; }
+        #fundadores, #proyectos, #contacto { background: #040811; }
+
+        .section-title {
+            font-size: 2.6rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #00f2fe;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .section-subtitle {
+            color: #6366f1;
+            margin-bottom: 70px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .grid-tech {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        /* --- TARJETAS CORTADAS AL ESTILO CYBERPUNK (FUNDADORES) --- */
+        .card {
+            background: linear-gradient(135deg, #0d172e 0%, #091021 100%);
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            padding: 40px 30px;
+            width: 330px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            /* Corte de esquina superior derecha e inferior izquierda */
+            clip-path: polygon(0 0, 88% 0, 100% 12%, 100% 100%, 12% 100%, 0 88%);
+        }
+
+        .card:hover {
+            border-color: #00f2fe;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.25);
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .card h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+        }
+
+        .card .role {
+            display: inline-block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #00f2fe;
+            background: rgba(0, 242, 254, 0.08);
+            padding: 5px 14px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* --- TARJETAS DE PRODUCTOS DE NUEVA GENERACIÓN --- */
+        .product-card {
+            background: #050a14;
+            border: 1px solid rgba(79, 172, 254, 0.25);
+            width: 360px;
+            text-align: left;
+            transition: 0.3s ease;
+            clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 0 100%);
+        }
+
+        .product-card:hover {
+            border-color: #00f2fe;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+        }
+
+        .product-header-tech {
+            background: rgba(0, 242, 254, 0.06);
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-header-tech h3 {
+            color: #00f2fe;
+            font-size: 1.25rem;
+            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Contenedor del estatus en línea */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #39ff14;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #39ff14;
+            animation: pulseStatus 1.5s infinite;
+        }
+
+        @keyframes pulseStatus {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #39ff14; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        .serial-tag {
+            font-size: 0.7rem;
+            color: #4facfe;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .product-body { padding: 25px; }
+        .product-body p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.6; }
+
+        .tech-sheet-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #4facfe;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .tech-list {
+            list-style: none;
+            margin-bottom: 25px;
+            background: rgba(4, 8, 17, 0.6);
+            padding: 12px 18px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .tech-list li {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(0, 242, 254, 0.15);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tech-list li:last-child { border-bottom: none; }
+        .tech-list li span { color: #00f2fe; font-weight: 500; }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 242, 254, 0.1);
+        }
+
+        .price {
+            font-size: 1.4rem;
+            color: #00f2fe;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+        }
+
+        /* --- PORTAFOLIO DE PROYECTOS (TIMELINE) --- */
+        .timeline { max-width: 900px; margin: 0 auto; position: relative; padding: 20px 0; }
+        
+        .timeline-item {
+            padding: 35px;
+            background: #0d172e;
+            border-left: 4px solid #4facfe;
+            margin-bottom: 35px;
+            text-align: left;
+            border-radius: 0 8px 8px 0;
+            transition: 0.3s;
+        }
+
+        .timeline-item:hover {
+            border-left-color: #00f2fe;
+            box-shadow: -5px 0 25px rgba(0, 242, 254, 0.25);
+            background: #111e3c;
+        }
+
+        .project-date { color: #00f2fe; font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; letter-spacing: 1px; }
+
+        /* --- FORMULARIO DE CONTACTO CYBERPUNK --- */
+        .contact-form {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #070d1a;
+            padding: 45px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+            clip-path: polygon(0 0, 93% 0, 100% 7%, 100% 100%, 0 100%);
+        }
+
+        .form-group { margin-bottom: 25px; text-align: left; }
+        .form-group label { display: block; color: #4facfe; margin-bottom: 8px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            background: #040811;
+            border: 1px solid rgba(129, 140, 248, 0.25);
+            color: #ffffff;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.35);
+        }
+
+        @keyframes glitchPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 242, 254, 0.6); }
+            50% { text-shadow: 0 0 22px rgba(0, 242, 254, 0.95), 0 0 35px #4facfe; }
+        }
+    </style>
+</head>
+<body class="cyber-grid">
+
+    <header>
+        <div class="logo">ENGINEERING <span>ROBOTICS GPT</span></div>
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#fundadores">Equipo</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#productos">Productos</a>
+            <a href="#proyectos">Proyectos</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="slider">
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+        </div>
+
+        <div class="hero-content">
+            <h1>El Futuro de la Automatización</h1>
+            <p>Diseñamos, programamos e implementamos sistemas mecatrónicos e inteligencia artificial de última generación para la industria global.</p>
+            <a href="#productos"><button class="btn-cyber">Ver Catálogo</button></a>
+        </div>
+    </section>
+
+    <section class="info-section" id="fundadores">
+        <h2 class="section-title">Mentes detrás del Sistema</h2>
+        <p class="section-subtitle">El núcleo de ingeniería encargado del desarrollo de nuestras tecnologías.</p>
+        
+        <div class="grid-tech">
+            <div class="card">
+                <h3>Angel Ernesto Cruz Ramirez</h3>
+                <span class="role">Técnico en Mecatrónica</span>
+                <p>Especialista en el diseño de sistemas mecánicos, cinemática de robots industriales y acoplamiento de hardware crítico automatizado.</p>
+            </div>
+            <div class="card">
+                <h3>Carlos Camacho Monroy</h3>
+                <span class="role">Técnico en Informática</span>
+                <p>Encargado del despliegue de software, optimización de algoritmos de control y arquitectura de bases de datos para sistemas inteligentes.</p>
+            </div>
+            <div class="card">
+                <h3>Cristopher Arreola Tinajero</h3>
+                <span class="role">Técnico en Informática</span>
+
+                <p>Especialista en redes de comunicación industrial, interfaces de usuario avanzadas (HMI) y seguridad de software embebido.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section" id="servicios">
+        <h2 class="section-title">Ingeniería Avanzada</h2>
+        <p class="section-subtitle">Soluciones de alta fidelidad tecnológica desarrolladas a medida.</p>
+        
+        <div class="grid-tech">
+            <div class="card">
+                <h3>Robótica Industrial</h3>
+                <p>Brazos articulados, sistemas de visión artificial computarizada y automatización avanzada de líneas de montaje.</p>
+            </div>
+            <div class="card">
+                <h3>Sistemas Embebidos</h3>
+                <p>Diseño de PCB y programación modular de microcontroladores para tareas de alta velocidad y precisión técnica.</p>
+            </div>
+            <div class="card">
+                <h3>IA Integrada</h3>
+                <p>Algoritmos de redes neuronales capaces de optimizar dinámicamente los flujos de trabajo en entornos industriales.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section" id="productos">
+        <h2 class="section-title">Hardware en Mercado</h2>
+        <p class="section-subtitle">Componentes y soluciones mecánicas disponibles para integración inmediata.</p>
+        
+        <div class="grid-tech">
+            <div class="product-card">
+                <div class="product-header-tech">
+                    <h3>Módulo GPT-01</h3>
+                    <div class="status-container">
+                        <div class="pulse-dot"></div>
+                        <span class="serial-tag">SYS-CTRL // 01</span>
+                    </div>
+                </div>
+                <div class="product-body">
+                    <p>Unidad de procesamiento centralizada para la gestión inteligente de motores a pasos y servomecanismos de alta carga.</p>
+                    
+                    <h4 class="tech-sheet-title">Ficha Técnica:</h4>
+                    <ul class="tech-list">
+                        <li>Microcontrolador: <span>32-Bits ARM Core</span></li>
+                        <li>Canales PWM: <span>16 Vías Autónomas</span></li>
+                        <li>Voltaje Operación: <span>12V - 24V DC</span></li>
+                        <li>Protocolo: <span>Modbus / CAN-Bus</span></li>
+                    </ul>
+                    
+                    <div class="product-footer">
+                        <span class="price">$2,450 MXN</span>
+                        <a href="#contacto"><button class="btn-cyber" style="padding: 10px 20px; font-size: 0.8rem;">Cotizar</button></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-header-tech">
+                    <h3>CyberLink-X</h3>
+                    <div class="status-container">
+                        <div class="pulse-dot"></div>
+                        <span class="serial-tag">ROB-ARM // 02</span>
+                    </div>
+                </div>
+                <div class="product-body">
+                    <p>Manipulador robótico articulado de prueba, ideal para la simulación de algoritmos y pruebas de programación en laboratorios.</p>
+                    
+                    <h4 class="tech-sheet-title">Ficha Técnica:</h4>
+                    <ul class="tech-list">
+                        <li>Grados Libertad: <span>4 Ejes Móviles</span></li>
+                        <li>Material Base: <span>Aluminio Anodizado</span></li>
+                        <li>Carga Máxima: <span>450 gramos</span></li>
+                        <li>Interfaz Datos: <span>USB-C / Serial</span></li>
+                    </ul>
+                    
+                    <div class="product-footer">
+                        <span class="price">$5,800 MXN</span>
+                        <a href="#contacto"><button class="btn-cyber" style="padding: 10px 20px; font-size: 0.8rem;">Cotizar</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects-section" id="proyectos">
+        <div class="info-section" style="padding: 0 0 40px 0;">
+            <h2 class="section-title">Desarrollos Recientes</h2>
+            <p class="section-subtitle">Explora los últimos hitos en ingeniería de vanguardia.</p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="project-date">PROYECTO HEXAPOD-X // 2026</div>
+                <h3>Robot de Exploración Terreno Difícil</h3>
+                <p>Diseño y construcción de un espécimen robótico bio-inspirado de seis patas con estabilidad autónoma mediante giroscopios avanzados.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="project-date">SISTEMA CYBER-CELL // 2026</div>
+                <h3>Célula de Manufactura Automatizada</h3>
+                <p>Integración de brazos robóticos sincronizados para empaque de precisión con una tasa de error matemática menor al 0.01%.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contacto">
+        <div class="info-section" style="padding: 0 0 40px 0;">
+            <h2 class="section-title">Conexión con el Sistema</h2>
+            <p class="section-subtitle">Escríbenos para iniciar el desarrollo de tu infraestructura tecnológica.</p>
+        </div>
+
+        <form class="contact-form" onsubmit="return false;">
+            <div class="form-group">
+                <label for="name">Nombre / Empresa</label>
+                <input type="text" id="name" placeholder="Ej. Corporativo Mecatrónico">
+            </div>
+            <div class="form-group">
+                <label for="email">Canal de Comunicación (Email)</label>
+                <input type="email" id="email" placeholder="nombre@empresa.com">
+            </div>
+            <div class="form-group">
+                <label for="message">Especificaciones del Proyecto</label>
+                <textarea id="message" rows="5" placeholder="Describe los requerimientos de robótica o automatización que necesitas..."></textarea>
+            </div>
+            <button type="submit" class="btn-cyber" style="width: 100%;">Enviar Datos</button>
+        </form>
+    </section>
+
+</body>
+</html>
